@@ -1,0 +1,543 @@
+body {
+    margin: 0;
+    overflow: hidden;
+}
+
+/* Area where balloons exist */
+/* Flower background: fixed behind everything, clicks pass through */
+#flowerCanvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    z-index: 0;
+    pointer-events: none;
+
+    background: radial-gradient(circle at center, #ffffff 0%, #fff4ed 60%, #ffe9e0 100%);
+}
+
+/* Area where balloons exist (sits above the flower background) */
+#balloonArea {
+    position: relative;
+    z-index: 1;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* Every balloon created by JavaScript */
+.balloon {
+    width: 175px;
+    position: absolute;
+
+    cursor: pointer;
+    user-select: none;
+
+    /*
+        Each balloon gets its own:
+        --float-time
+        --stop-position
+    */
+    animation: moveUp var(--float-time) ease-out forwards;
+}
+
+/* Pop animation */
+.balloon.blast {
+    animation: blast 0.8s ease forwards;
+}
+
+
+/* ---------------- MESSAGE (also the dim overlay) ---------------- */
+
+/*
+    CHANGED: the overlay used to switch between display:none and
+    display:flex. That cannot be faded, so it now stays in the page
+    and is hidden with opacity + visibility instead.
+
+    --dim-fade-time is set from JavaScript (DIM_FADE_TIME),
+    so the fade length is controlled from one place.
+*/
+#message {
+    position: fixed;
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.5);
+
+    z-index: 10;
+
+    /* Hidden state */
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+
+    /* Fading OUT: fade the opacity, then switch visibility off
+       at the end (that is what the delay on "visibility" does) */
+    transition:
+        opacity var(--dim-fade-time, 0.8s) ease,
+        visibility 0s linear var(--dim-fade-time, 0.8s);
+}
+
+
+/* Message becomes visible */
+#message.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+
+    /* Fading IN: quick, and visibility switches on immediately */
+    transition:
+        opacity 0.3s ease,
+        visibility 0s;
+}
+
+
+/* Actual text */
+#messageText {
+    margin: 20px;
+
+    max-width: 800px;
+
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 40px;
+    text-align: center;
+}
+
+
+/*
+    CHANGED: the entrance animation now lives on "#message.show #messageText".
+    Removing/adding the "show" class restarts it, exactly like the old
+    display:none -> display:flex switch did. When the overlay fades out,
+    the text stays put instead of replaying the animation.
+*/
+#message.show #messageText {
+    animation: messageIn 0.8s ease forwards;
+}
+
+
+/* ---------------- PASSWORD DISPLAY ---------------- */
+
+#passwordDisplay {
+    position: fixed;
+
+    /* "top" is set from JavaScript (PASSWORD_DISPLAY_TOP) */
+    left: 50%;
+    transform: translateX(-50%);
+
+    /* Above the dim overlay (10), so it stays bright during the reveal */
+    z-index: 20;
+
+    /* Never blocks clicks on balloons */
+    pointer-events: none;
+
+    padding: 10px 24px 14px;
+    text-align: center;
+
+    background: rgba(255, 255, 255, 0.92);
+    border-radius: 18px;
+    box-shadow: 0 6px 22px rgba(0, 0, 0, 0.25);
+    max-width: 96vw;
+    transition: opacity 0.6s ease;
+}
+
+/* Used when SHOW_PASSWORD_FROM_START is false */
+#passwordDisplay.hidden {
+    opacity: 0;
+}
+
+#passwordLabel {
+    margin: 0 0 6px;
+
+    color: #6a4c93;
+    font-family: Arial, sans-serif;
+    font-size: 0.8rem;
+    font-weight: bold;
+    letter-spacing: 0.35em;
+}
+
+#passwordSlots {
+    display: flex;
+    justify-content: center;
+    gap: clamp(3px, 0.6vw, 10px);
+}
+
+/* One box per password character (sizes scale with the window) */
+.password-slot {
+    width: clamp(1.1rem, 3vw, 2.2rem);
+    height: clamp(1.8rem, 4vw, 2.8rem);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(106, 76, 147, 0.4);
+    font-family: Arial, sans-serif;
+    font-size: clamp(1.1rem, 2.4vw, 1.9rem);
+    font-weight: bold;
+
+    border-bottom: 3px solid rgba(106, 76, 147, 0.4);
+}
+
+/* One box per password character */
+.password-slot {
+    width: 2.2rem;
+    height: 2.8rem;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    color: rgba(106, 76, 147, 0.4);
+    font-family: Arial, sans-serif;
+    font-size: 1.9rem;
+    font-weight: bold;
+
+    border-bottom: 3px solid rgba(106, 76, 147, 0.4);
+}
+
+/* A slot after its character has been discovered */
+.password-slot.revealed {
+    color: #ff4d6d;
+    border-bottom-color: #ff4d6d;
+    text-shadow: 0 0 10px rgba(255, 77, 109, 0.45);
+}
+
+/* Extra class that is only present during the reveal animation */
+.password-slot.just-revealed {
+    animation: passwordReveal 0.8s ease forwards;
+}
+
+
+/* ---------------- CHARACTER ---------------- */
+
+/*
+    The character is positioned with:
+      top: 0            -> its top edge starts at the top of the screen
+      left: (set by JS) -> centered under the slot being revealed
+      translate(-50%, Y) -> Y moves it down; -50% centers it horizontally
+
+    Default transform = far below the screen (110vh), so the
+    "hidden" position is simply "off the bottom of the screen".
+    JavaScript changes the transform to move it, and the CSS
+    transition makes that movement smooth.
+*/
+.character {
+    position: fixed;
+    top: 0;
+    left: 50%;
+
+    /* Width is set from JavaScript (CHARACTER_SIZE) */
+
+    z-index: 30;
+    pointer-events: none;
+    user-select: none;
+
+    visibility: hidden;
+    transform: translate(-50%, 110vh);
+
+    /* Transition length is set from JavaScript per movement */
+    transition-property: transform;
+    transition-timing-function: ease-in-out;
+}
+
+.character.visible {
+    visibility: visible;
+}
+
+/* Small "happy" wiggle while the character pauses.
+   Uses the separate rotate/scale properties so it does not
+   fight with the transform used for movement. */
+.character.react {
+    animation: characterReact 0.9s ease-in-out;
+}
+
+
+/* ---------------- CONFETTI ---------------- */
+
+#confettiLayer {
+    position: fixed;
+    inset: 0;
+
+    overflow: hidden;
+    pointer-events: none;
+
+    /* Above the dim overlay, below the character */
+    z-index: 25;
+}
+
+/*
+    Each piece gets its own values from JavaScript:
+    --dx, --dy, --spin, --confetti-duration
+    (plus its color, size and animation-delay)
+*/
+.confetti-piece {
+    position: absolute;
+    top: -12px;
+
+    /* Invisible until its animation delay has passed */
+    opacity: 0;
+
+    animation: confettiFly var(--confetti-duration) cubic-bezier(0.2, 0.6, 0.4, 1) forwards;
+}
+
+
+/* ---------------- ANIMATIONS ---------------- */
+
+@keyframes moveUp {
+
+    0% {
+        top: 100%;
+    }
+
+    100% {
+        top: var(--stop-position);
+    }
+}
+
+
+@keyframes blast {
+
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(2.5);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: scale(0);
+        opacity: 0;
+    }
+}
+
+
+@keyframes messageIn {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.6) translateY(30px);
+    }
+
+    70% {
+        opacity: 1;
+        transform: scale(1.05) translateY(0);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+
+/* New password character: pops in with a soft glow */
+@keyframes passwordReveal {
+
+    0% {
+        opacity: 0;
+        transform: scale(0.3);
+    }
+
+    60% {
+        opacity: 1;
+        transform: scale(1.35);
+        text-shadow: 0 0 18px rgba(255, 77, 109, 0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+
+/* Character wiggle */
+@keyframes characterReact {
+
+    0%,
+    100% {
+        rotate: 0deg;
+        scale: 1;
+    }
+
+    25% {
+        rotate: -8deg;
+        scale: 1.1;
+    }
+
+    75% {
+        rotate: 8deg;
+        scale: 1.1;
+    }
+}
+
+
+/*
+    Confetti flight: it shoots out fast (most of the sideways
+    movement happens early), then drifts down and fades out.
+    The middle step (45%) is what creates the curved path.
+*/
+@keyframes confettiFly {
+
+    0% {
+        opacity: 1;
+        transform: translate(0, 0) rotate(0deg);
+    }
+
+    45% {
+        opacity: 1;
+        transform:
+            translate(calc(var(--dx) * 0.75), calc(var(--dy) * 0.3)) rotate(calc(var(--spin) * 0.5));
+    }
+
+    100% {
+        opacity: 0;
+        transform: translate(var(--dx), var(--dy)) rotate(var(--spin));
+    }
+}
+
+
+/* ---------------- PASSWORD POPUP ---------------- */
+
+#passwordPrompt {
+    position: fixed;
+    inset: 0;
+    z-index: 40;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.6);
+
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.4s ease, visibility 0s linear 0.4s;
+}
+
+#passwordPrompt.show {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transition: opacity 0.4s ease, visibility 0s;
+}
+
+#promptBox {
+    width: min(90vw, 420px);
+    padding: 28px 26px 26px;
+
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.35);
+    text-align: center;
+    font-family: Arial, sans-serif;
+}
+
+#promptTitle {
+    margin: 0 0 8px;
+    color: #ff4d6d;
+    font-size: 1.7rem;
+}
+
+#promptText {
+    margin: 0 0 18px;
+    color: #555;
+    font-size: 1rem;
+}
+
+#passwordInput {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 12px 14px;
+
+    font-size: 1.1rem;
+    text-align: center;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+
+    border: 2px solid #d9c6ff;
+    border-radius: 12px;
+    outline: none;
+}
+
+#passwordInput:focus {
+    border-color: #ff4d6d;
+}
+
+#passwordError {
+    min-height: 1.3em;
+    margin: 10px 0 8px;
+    color: #d62839;
+    font-size: 0.95rem;
+}
+
+#passwordSubmit {
+    padding: 11px 32px;
+
+    color: #fff;
+    background: #ff4d6d;
+    font-size: 1rem;
+    font-weight: bold;
+
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+}
+
+#passwordSubmit:hover {
+    background: #e63e5d;
+}
+
+
+/* ---------------- FINAL VIDEO + MESSAGE ---------------- */
+
+#videoScreen {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+
+    display: none;
+    align-items: center;
+    justify-content: center;
+
+    background: #000;
+}
+
+#videoScreen.show {
+    display: flex;
+}
+
+#finalVideo {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+#finalMessage {
+    display: none;
+    margin: 20px;
+
+    color: #fff;
+    font-family: Georgia, serif;
+    font-size: clamp(1.5rem, 4vw, 2.6rem);
+    text-align: center;
+}
+
+/* After the video: hide it and show the message */
+#videoScreen.done #finalVideo {
+    display: none;
+}
+
+#videoScreen.done #finalMessage {
+    display: block;
+}

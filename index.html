@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Happy Birthday Deepika</title>
+
+    <style>
+        /* ======================================================
+           PAGE
+        ====================================================== */
+
+        * {
+            box-sizing: border-box;
+        }
+
+        html,
+        body {
+            margin: 0;
+            width: 100%;
+            height: 100%;
+        }
+
+        body {
+            min-height: 100vh;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            overflow: hidden;
+
+            /* NEW COLORS: soft rose / lavender cream */
+            background:
+                radial-gradient(circle at 50% 35%,
+                    #fffafd 0%,
+                    #fdf0f7 40%,
+                    #f3dcea 100%);
+
+            position: relative;
+        }
+
+
+        /* ======================================================
+           INTRO (FLOWERS) OVERLAY
+        ====================================================== */
+
+        #intro {
+            position: fixed;
+            inset: 0;
+            z-index: 50;
+
+            background:
+                radial-gradient(circle at 50% 50%,
+                    #ffffff 0%,
+                    #fff3f8 60%,
+                    #fbe4ef 100%);
+
+            transition: opacity 0.9s ease;
+        }
+
+        #intro.hide {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #introCanvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+
+        /* ======================================================
+           SCENE (everything from the cake page)
+           Hidden until the flowers leave. Animations are paused
+           until body gets the class "show".
+        ====================================================== */
+
+        .scene {
+            position: fixed;
+            inset: 0;
+
+            display: flex;
+            justify-content: center;
+            align-items: center;
+
+            opacity: 0;
+            transition: opacity 0.9s ease;
+        }
+
+        body.show .scene {
+            opacity: 1;
+        }
+
+        .scene *,
+        .scene *::before,
+        .scene *::after {
+            animation-play-state: paused !important;
+        }
+
+        body.show .scene *,
+        body.show .scene *::before,
+        body.show .scene *::after {
+            animation-play-state: running !important;
+        }
+
+
+        /* ======================================================
+           ELEGANT BACKGROUND GLOW
+        ====================================================== */
+
+        .scene::before {
+            content: "";
+
+            position: absolute;
+
+            width: 650px;
+            height: 650px;
+
+            top: 50%;
+            left: 50%;
+
+            transform: translate(-50%, -50%);
+
+            background:
+                radial-gradient(circle,
+                    rgba(255, 190, 220, 0.30),
+                    rgba(255, 190, 220, 0) 70%);
+
+            pointer-events: none;
+        }
+
+
+        /* ======================================================
+           BACKGROUND BIRTHDAY MESSAGE
+        ====================================================== */
+
+        .birthday-message {
+            position: absolute;
+
+            top: 8%;
+
+            width: 100%;
+
+            text-align: center;
+
+            z-index: 1;
+
+            pointer-events: none;
+
+            animation: messageAppear 1.5s ease forwards;
+        }
+
+
+        .birthday-message h1 {
+            margin: 0;
+
+            font-family:
+                Georgia,
+                "Times New Roman",
+                serif;
+
+            font-size: clamp(38px, 7vw, 82px);
+
+            font-weight: 500;
+
+            letter-spacing: 3px;
+
+            color: #a04d78;
+
+            text-shadow:
+                0 2px 2px rgba(255, 255, 255, 0.8),
+                0 5px 15px rgba(140, 60, 100, 0.14);
+        }
+
+
+        .birthday-message p {
+            margin: 10px 0 0;
+
+            font-family:
+                "Trebuchet MS",
+                sans-serif;
+
+            font-size: 14px;
+
+            letter-spacing: 5px;
+
+            text-transform: uppercase;
+
+            color: #c48aa9;
+        }
+
+
+        /* Decorative line underneath heading */
+
+        .birthday-message .line {
+            width: 120px;
+            height: 1px;
+
+            margin: 18px auto 0;
+
+            background: #d39ab9;
+
+            opacity: 0.6;
+
+            position: relative;
+        }
+
+
+        .birthday-message .line::before,
+        .birthday-message .line::after {
+            content: "✦";
+
+            position: absolute;
+
+            top: 50%;
+
+            transform: translateY(-50%);
+
+            font-size: 11px;
+
+            color: #d39ab9;
+        }
+
+        .birthday-message .line::before {
+            left: -22px;
+        }
+
+        .birthday-message .line::after {
+            right: -22px;
+        }
+
+
+        /* ======================================================
+           BACKGROUND DECORATIVE CIRCLES
+        ====================================================== */
+
+        .decor {
+            position: absolute;
+
+            border-radius: 50%;
+
+            pointer-events: none;
+
+            z-index: 0;
+        }
+
+
+        .decor-1 {
+            width: 14px;
+            height: 14px;
+
+            top: 22%;
+            left: 15%;
+
+            background: rgba(211, 154, 185, 0.30);
+        }
+
+
+        .decor-2 {
+            width: 9px;
+            height: 9px;
+
+            top: 32%;
+            right: 17%;
+
+            background: rgba(160, 77, 120, 0.2);
+        }
+
+
+        .decor-3 {
+            width: 7px;
+            height: 7px;
+
+            top: 18%;
+            right: 30%;
+
+            background: rgba(255, 183, 3, 0.35);
+        }
+
+
+        .decor-4 {
+            width: 11px;
+            height: 11px;
+
+            bottom: 22%;
+            left: 18%;
+
+            background: rgba(180, 160, 230, 0.3);
+        }
+
+
+        .decor-5 {
+            width: 8px;
+            height: 8px;
+
+            bottom: 25%;
+            right: 20%;
+
+            background: rgba(160, 77, 120, 0.18);
+        }
+
+
+        /* ======================================================
+           CAKE CONTAINER
+        ====================================================== */
+
+        .cake {
+            position: relative;
+
+            width: 260px;
+            height: 300px;
+
+            margin-top: 110px;
+
+            z-index: 2;
+        }
+
+
+        /* ======================================================
+           CAKE PLATE
+        ====================================================== */
+
+        .plate {
+            position: absolute;
+
+            bottom: 20px;
+            left: 50%;
+
+            width: 280px;
+            height: 25px;
+
+            transform: translateX(-50%);
+
+            background: #eadbee;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 8px 12px rgba(0, 0, 0, 0.15);
+
+            animation: plateAppear 0.8s ease forwards;
+        }
+
+
+        /* ======================================================
+           BOTTOM CAKE LAYER
+        ====================================================== */
+
+        .layer-bottom {
+            position: absolute;
+
+            bottom: 45px;
+            left: 30px;
+
+            width: 200px;
+            height: 55px;
+
+            background:
+                linear-gradient(to bottom,
+                    #e57fa6,
+                    #d4638f);
+
+            border-radius: 12px 12px 15px 15px;
+
+            box-shadow:
+                0 8px 10px rgba(0, 0, 0, 0.18);
+
+            opacity: 0;
+
+            animation:
+                layerBuild 0.8s ease forwards;
+
+            animation-delay: 0.4s;
+        }
+
+
+        /* ======================================================
+           BOTTOM FROSTING
+        ====================================================== */
+
+        .frosting-bottom {
+            position: absolute;
+
+            bottom: 88px;
+            left: 25px;
+
+            width: 210px;
+            height: 22px;
+
+            background: #fff2f8;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 3px 5px rgba(0, 0, 0, 0.12);
+
+            opacity: 0;
+
+            animation:
+                frostingAppear 0.7s ease forwards;
+
+            animation-delay: 1.1s;
+        }
+
+
+        /* ======================================================
+           MIDDLE CAKE LAYER
+        ====================================================== */
+
+        .layer-middle {
+            position: absolute;
+
+            bottom: 98px;
+            left: 40px;
+
+            width: 180px;
+            height: 50px;
+
+            background:
+                linear-gradient(to bottom,
+                    #b99be6,
+                    #a07fd6);
+
+            border-radius: 11px 11px 14px 14px;
+
+            box-shadow:
+                0 7px 9px rgba(0, 0, 0, 0.16);
+
+            opacity: 0;
+
+            animation:
+                middleLayerBuild 0.8s ease forwards;
+
+            animation-delay: 1.3s;
+        }
+
+
+        /* ======================================================
+           MIDDLE FROSTING
+        ====================================================== */
+
+        .frosting-middle {
+            position: absolute;
+
+            bottom: 137px;
+            left: 35px;
+
+            width: 190px;
+            height: 20px;
+
+            background: #fff6fb;
+
+            border-radius: 50%;
+
+            opacity: 0;
+
+            animation:
+                frostingAppear 0.7s ease forwards;
+
+            animation-delay: 2s;
+        }
+
+
+        /* ======================================================
+           TOP CAKE LAYER
+        ====================================================== */
+
+        .layer-top {
+            position: absolute;
+
+            bottom: 147px;
+            left: 50px;
+
+            width: 160px;
+            height: 45px;
+
+            background:
+                linear-gradient(to bottom,
+                    #f3a0c0,
+                    #e784ab);
+
+            border-radius: 10px 10px 13px 13px;
+
+            box-shadow:
+                0 6px 8px rgba(0, 0, 0, 0.14);
+
+            opacity: 0;
+
+            animation:
+                topLayerBuild 0.8s ease forwards;
+
+            animation-delay: 2.2s;
+        }
+
+
+        /* ======================================================
+           TOP FROSTING
+        ====================================================== */
+
+        .frosting-top {
+            position: absolute;
+
+            bottom: 182px;
+            left: 45px;
+
+            width: 170px;
+            height: 23px;
+
+            background: #fff8fc;
+
+            border-radius: 50%;
+
+            box-shadow:
+                0 3px 5px rgba(0, 0, 0, 0.1);
+
+            opacity: 0;
+
+            animation:
+                frostingAppear 0.7s ease forwards;
+
+            animation-delay: 2.9s;
+        }
+
+
+        /* ======================================================
+           FROSTING DRIPS
+        ====================================================== */
+
+        .drip {
+            position: absolute;
+
+            width: 13px;
+            height: 24px;
+
+            background: #fff8fc;
+
+            border-radius:
+                0 0 10px 10px;
+
+            opacity: 0;
+
+            animation:
+                dripAppear 0.5s ease forwards;
+
+            animation-delay: 3.2s;
+        }
+
+
+        .drip-1 {
+            left: 65px;
+            bottom: 167px;
+        }
+
+
+        .drip-2 {
+            left: 105px;
+            bottom: 167px;
+        }
+
+
+        .drip-3 {
+            left: 145px;
+            bottom: 167px;
+        }
+
+
+        /* ======================================================
+           CANDLE
+        ====================================================== */
+
+        .candle {
+            position: absolute;
+
+            bottom: 202px;
+            left: 120px;
+
+            width: 20px;
+            height: 55px;
+
+            background:
+                repeating-linear-gradient(45deg,
+                    #c9b3f2 0px,
+                    #c9b3f2 7px,
+                    #f5efff 7px,
+                    #f5efff 12px);
+
+            border-radius: 4px;
+
+            box-shadow:
+                2px 3px 5px rgba(0, 0, 0, 0.15);
+
+            opacity: 0;
+
+            animation:
+                candleAppear 0.7s ease forwards;
+
+            animation-delay: 3.5s;
+        }
+
+
+        /* ======================================================
+           WICK
+        ====================================================== */
+
+        .wick {
+            position: absolute;
+
+            bottom: 256px;
+            left: 129px;
+
+            width: 3px;
+            height: 10px;
+
+            background: #333;
+
+            border-radius: 50%;
+
+            opacity: 0;
+
+            animation:
+                wickAppear 0.4s ease forwards;
+
+            animation-delay: 4.1s;
+        }
+
+
+        /* ======================================================
+           FLAME
+        ====================================================== */
+
+        .flame {
+            position: absolute;
+
+            bottom: 264px;
+            left: 123px;
+
+            width: 15px;
+            height: 24px;
+
+            background: #ffb703;
+
+            border-radius:
+                50% 50% 50% 50% / 65% 65% 35% 35%;
+
+            transform: rotate(45deg);
+
+            opacity: 0;
+
+            animation:
+                flameAppear 0.5s ease forwards,
+                flameMove 0.8s ease-in-out infinite;
+
+            animation-delay:
+                4.4s,
+                4.9s;
+
+            filter:
+                drop-shadow(0 0 6px rgba(255, 166, 0, 0.7));
+        }
+
+
+        /* Inner flame */
+
+        .flame::after {
+            content: "";
+
+            position: absolute;
+
+            width: 7px;
+            height: 12px;
+
+            background: #fff4b0;
+
+            border-radius: 50%;
+
+            left: 4px;
+            top: 7px;
+        }
+
+
+        /* ======================================================
+           ANIMATIONS
+        ====================================================== */
+
+        @keyframes messageAppear {
+
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+
+        @keyframes plateAppear {
+
+            0% {
+                opacity: 0;
+                transform:
+                    translateX(-50%) scale(0.8);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    translateX(-50%) scale(1);
+            }
+        }
+
+
+        @keyframes layerBuild {
+
+            0% {
+                opacity: 0;
+                transform:
+                    translateY(-180px);
+            }
+
+            65% {
+                opacity: 1;
+                transform:
+                    translateY(12px);
+            }
+
+            85% {
+                transform:
+                    translateY(-4px);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        @keyframes frostingAppear {
+
+            0% {
+                opacity: 0;
+                transform:
+                    scaleX(0.7) translateY(-8px);
+            }
+
+            70% {
+                opacity: 1;
+                transform:
+                    scaleX(1.05) translateY(2px);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    scaleX(1) translateY(0);
+            }
+        }
+
+
+        @keyframes middleLayerBuild {
+
+            0% {
+                opacity: 0;
+                transform:
+                    translateY(-150px);
+            }
+
+            65% {
+                opacity: 1;
+                transform:
+                    translateY(8px);
+            }
+
+            85% {
+                transform:
+                    translateY(-3px);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        @keyframes topLayerBuild {
+
+            0% {
+                opacity: 0;
+                transform:
+                    translateY(-130px);
+            }
+
+            65% {
+                opacity: 1;
+                transform:
+                    translateY(7px);
+            }
+
+            85% {
+                transform:
+                    translateY(-3px);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        @keyframes dripAppear {
+
+            0% {
+                opacity: 0;
+                transform:
+                    scaleY(0);
+
+                transform-origin: top;
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    scaleY(1);
+            }
+        }
+
+
+        @keyframes candleAppear {
+
+            0% {
+                opacity: 0;
+                transform:
+                    translateY(-50px);
+            }
+
+            70% {
+                opacity: 1;
+                transform:
+                    translateY(5px);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    translateY(0);
+            }
+        }
+
+
+        @keyframes wickAppear {
+
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 1;
+            }
+        }
+
+
+        @keyframes flameAppear {
+
+            0% {
+                opacity: 0;
+                transform:
+                    rotate(45deg) scale(0);
+            }
+
+            60% {
+                opacity: 1;
+                transform:
+                    rotate(45deg) scale(1.2);
+            }
+
+            100% {
+                opacity: 1;
+                transform:
+                    rotate(45deg) scale(1);
+            }
+        }
+
+
+        @keyframes flameMove {
+
+            0% {
+                transform:
+                    rotate(43deg) scale(1);
+            }
+
+            50% {
+                transform:
+                    rotate(48deg) scale(1.08);
+            }
+
+            100% {
+                transform:
+                    rotate(43deg) scale(1);
+            }
+        }
+
+        /* ======================================================
+           CANDLE CLICK -> LIGHTS OFF -> GAME
+        ====================================================== */
+
+        .cake.ready .candle,
+        .cake.ready .wick,
+        .cake.ready .flame {
+            cursor: pointer;
+        }
+
+        #blackout {
+            position: fixed;
+            inset: 0;
+            z-index: 100;
+            background: #000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+
+        #blackout.on {
+            opacity: 1;
+            pointer-events: auto;
+        }
+
+        .scene.gone {
+            display: none;
+        }
+
+        #game {
+            position: fixed;
+            inset: 0;
+            visibility: hidden;
+        }
+
+        body.game #game {
+            visibility: visible;
+        }
+    </style>
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+
+<body>
+
+    <!-- ======================================================
+         SCENE: BIRTHDAY MESSAGE + CAKE (starts after flowers)
+    ====================================================== -->
+
+    <div class="scene">
+
+        <div class="birthday-message">
+
+            <h1>Happy Birthday Deepika</h1>
+
+            <p>A little celebration made just for you</p>
+
+            <div class="line"></div>
+
+        </div>
+
+        <div class="decor decor-1"></div>
+        <div class="decor decor-2"></div>
+        <div class="decor decor-3"></div>
+        <div class="decor decor-4"></div>
+        <div class="decor decor-5"></div>
+
+        <div class="cake">
+            <div class="plate"></div>
+
+            <div class="layer-bottom"></div>
+            <div class="frosting-bottom"></div>
+
+            <div class="layer-middle"></div>
+            <div class="frosting-middle"></div>
+
+            <div class="layer-top"></div>
+            <div class="frosting-top"></div>
+
+            <div class="drip drip-1"></div>
+            <div class="drip drip-2"></div>
+            <div class="drip drip-3"></div>
+
+            <div class="candle"></div>
+            <div class="wick"></div>
+            <div class="flame"></div>
+        </div>
+
+    </div>
+
+
+    <!-- ======================================================
+         INTRO: FLOWERS BLOOM IN FROM OUTSIDE, HOLD, THEN LEAVE
+    ====================================================== -->
+
+    <div id="intro">
+        <canvas id="introCanvas"></canvas>
+    </div>
+
+
+
+    <!-- Blackout used when the candle is clicked -->
+    <div id="blackout"></div>
+
+    <!-- Balloon game (hidden until the lights come back) -->
+    <div id="game">
+        <canvas id="flowerCanvas"></canvas>
+        <div id="balloonArea"></div>
+        <div id="message">
+            <p id="messageText"></p>
+        </div>
+        <div id="passwordDisplay">
+            <p id="passwordLabel">PASSWORD</p>
+            <div id="passwordSlots"></div>
+        </div>
+        <div id="confettiLayer"></div>
+
+        <!-- Password popup (shown after all characters are found) -->
+        <div id="passwordPrompt">
+            <div id="promptBox">
+                <h2 id="promptTitle">Congratulations!</h2>
+                <p id="promptText">You found the password. Enter it below to unlock your surprise.</p>
+                <input id="passwordInput" type="text" autocomplete="off" spellcheck="false"
+                    placeholder="Enter password">
+                <p id="passwordError"></p>
+                <button id="passwordSubmit" type="button">Unlock</button>
+            </div>
+        </div>
+
+        <!-- Final video, then a short message -->
+        <div id="videoScreen">
+            <video id="finalVideo" playsinline preload="auto"></video>
+            <p id="finalMessage"></p>
+        </div>
+    </div>
+
+    <script>
+        (function () {
+            /* ======================================================
+               TIMING (seconds) - change these to adjust the intro
+            ====================================================== */
+
+            const ENTER_TIME = 1.8;   // how long each flower takes to fly in and bloom
+            const ENTER_SPREAD = 0.8; // extra stagger so flowers don't all arrive together
+            const HOLD_TIME = 2.0;    // flowers stay on screen for this long
+            const EXIT_TIME = 1.4;    // how long each flower takes to go back out
+            const EXIT_SPREAD = 0.5;
+
+            const canvas = document.getElementById('introCanvas');
+            const ctx = canvas.getContext('2d');
+            const intro = document.getElementById('intro');
+
+            let width, height, dpr;
+            let flowers = [];
+
+            const palette = [
+                { petal: '#ffc2d9', center: '#ff8fb8' }, // Rose pink
+                { petal: '#f4b6e6', center: '#e58ad2' }, // Orchid
+                { petal: '#d9c6ff', center: '#b79af0' }, // Lavender
+                { petal: '#ffd6e8', center: '#ffa6c9' }, // Blush
+                { petal: '#ffe0b8', center: '#ffc06b' }, // Peach
+                { petal: '#c9e8ff', center: '#8fc8f5' }  // Sky
+            ];
+
+            /* Easing helpers */
+            const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+            const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
+            const easeInCubic = t => t * t * t;
+            const easeOutBack = t => {
+                const c1 = 1.70158, c3 = c1 + 1;
+                return 1 + c3 * Math.pow(t - 1, 3) + c1 * Math.pow(t - 1, 2);
+            };
+
+            function resize() {
+                dpr = window.devicePixelRatio || 1;
+                width = window.innerWidth;
+                height = window.innerHeight;
+                canvas.width = width * dpr;
+                canvas.height = height * dpr;
+                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                buildFlowers();
+            }
+
+            class Flower {
+                constructor(tx, ty, size) {
+                    this.tx = tx;               // where the flower blooms (on screen)
+                    this.ty = ty;
+                    this.size = size;
+                    this.petals = Math.floor(Math.random() * 3) + 5;   // 5 to 7
+                    this.petalLength = size * (Math.random() * 0.6 + 1.3);
+                    this.color = palette[Math.floor(Math.random() * palette.length)];
+                    this.rot = Math.random() * Math.PI * 2;
+                    this.spin = (Math.random() < 0.5 ? -1 : 1) * (Math.random() * 0.5 + 0.3);
+                    this.enterDelay = Math.random() * ENTER_SPREAD;
+                    this.exitDelay = Math.random() * EXIT_SPREAD;
+                    this.phase = Math.random() * Math.PI * 2;
+
+                    // Start point: pushed outside the screen, away from the centre
+                    const cx = width / 2, cy = height / 2;
+                    let dx = tx - cx, dy = ty - cy;
+                    const len = Math.hypot(dx, dy) || 1;
+                    dx /= len; dy /= len;
+                    const push = Math.max(width, height) * 0.6 + size * 4;
+                    this.ox = tx + dx * push;
+                    this.oy = ty + dy * push;
+                }
+
+                draw(t) {
+                    // Local progress for enter and exit
+                    const p = clamp((t - this.enterDelay) / ENTER_TIME);
+                    const exitStart = ENTER_TIME + ENTER_SPREAD + HOLD_TIME;
+                    const q = clamp((t - exitStart - this.exitDelay) / EXIT_TIME);
+
+                    if (p <= 0 || q >= 1) return;
+
+                    // Position: fly in, then fly back out
+                    let x, y;
+                    if (q > 0) {
+                        const e = easeInCubic(q);
+                        x = this.tx + (this.ox - this.tx) * e;
+                        y = this.ty + (this.oy - this.ty) * e;
+                    } else {
+                        const e = easeOutCubic(p);
+                        x = this.ox + (this.tx - this.ox) * e;
+                        y = this.oy + (this.ty - this.oy) * e;
+                    }
+
+                    // Gentle floating while it is on screen
+                    x += Math.sin(t * 1.2 + this.phase) * 4;
+                    y += Math.cos(t * 1.0 + this.phase) * 4;
+
+                    // Bloom: bud opens as it arrives, closes as it leaves
+                    let bloom = easeOutBack(clamp((p - 0.35) / 0.65));
+                    bloom = Math.max(0, bloom) * (1 - easeInCubic(q));
+                    const budScale = 0.35 + 0.65 * clamp(bloom, 0, 1);
+
+                    const rotation = this.rot + t * this.spin * 0.35 + (1 - easeOutCubic(p)) * this.spin * 2;
+
+                    ctx.save();
+                    ctx.translate(x, y);
+                    ctx.rotate(rotation);
+                    ctx.globalAlpha = 0.95;
+
+                    const s = this.size;
+                    const L = this.petalLength * bloom;
+
+                    // Petals
+                    for (let i = 0; i < this.petals; i++) {
+                        ctx.save();
+                        ctx.rotate((Math.PI * 2 / this.petals) * i);
+                        ctx.beginPath();
+                        ctx.fillStyle = this.color.petal;
+                        ctx.shadowColor = 'rgba(160, 77, 120, 0.18)';
+                        ctx.shadowBlur = 8;
+                        ctx.moveTo(0, 0);
+                        ctx.bezierCurveTo(-s * 0.6 * bloom, L * 0.5, -s * 0.4 * bloom, L, 0, L);
+                        ctx.bezierCurveTo(s * 0.4 * bloom, L, s * 0.6 * bloom, L * 0.5, 0, 0);
+                        ctx.fill();
+                        ctx.restore();
+                    }
+
+                    // Centre
+                    ctx.shadowBlur = 0;
+                    ctx.beginPath();
+                    ctx.arc(0, 0, s * 0.45 * budScale, 0, Math.PI * 2);
+                    ctx.fillStyle = this.color.center;
+                    ctx.fill();
+
+                    ctx.beginPath();
+                    ctx.arc(0, 0, s * 0.22 * budScale, 0, Math.PI * 2);
+                    ctx.fillStyle = 'rgba(255, 255, 255, 0.7)';
+                    ctx.fill();
+
+                    ctx.restore();
+                }
+            }
+
+            /* Flowers fill the WHOLE screen: a jittered grid, mixed sizes */
+            function buildFlowers() {
+                flowers = [];
+                const m = Math.min(width, height);
+                const base = clamp(m / 14, 22, 46);
+                const cell = base * 2.7;
+
+                for (let x = 0; x <= width + cell * 0.5; x += cell) {
+                    for (let y = 0; y <= height + cell * 0.5; y += cell) {
+                        const jx = x + (Math.random() - 0.5) * cell * 0.6;
+                        const jy = y + (Math.random() - 0.5) * cell * 0.6;
+                        const size = base * (0.85 + Math.random() * 0.55);
+                        flowers.push(new Flower(jx, jy, size));
+                    }
+                }
+
+                // Draw small ones first, big ones on top
+                flowers.sort((a, b) => a.size - b.size);
+            }
+
+            window.addEventListener('resize', resize);
+            resize();
+
+            /* ======================================================
+               MAIN LOOP
+            ====================================================== */
+
+            const startTime = performance.now();
+            const exitEnd = ENTER_TIME + ENTER_SPREAD + HOLD_TIME + EXIT_TIME + EXIT_SPREAD;
+            let revealed = false;
+
+            function frame(now) {
+                const t = (now - startTime) / 1000;
+
+                ctx.clearRect(0, 0, width, height);
+                flowers.forEach(f => f.draw(t));
+
+                // Once the flowers have left, fade the intro out and start the cake
+                if (!revealed && t >= exitEnd) {
+                    revealed = true;
+                    intro.classList.add('hide');
+                    document.body.classList.add('show');
+                    setTimeout(() => intro.remove(), 1000);
+                    setTimeout(() => {
+                        candleReady = true;
+                        document.querySelector('.cake').classList.add('ready');
+                    }, 5000);
+                    return;
+                }
+
+                requestAnimationFrame(frame);
+            }
+
+            requestAnimationFrame(frame);
+
+            /* ======================================================
+               CANDLE CLICK: lights off (black for 2s), then balloons
+            ====================================================== */
+
+            const BLACK_FADE_IN = 400;   // ms to go dark
+            const BLACK_HOLD = 2000;     // ms of full black
+            let candleReady = false;
+
+            function onCandleClick() {
+                if (!candleReady) return;
+                candleReady = false;
+
+                const blackout = document.getElementById('blackout');
+                blackout.classList.add('on');
+
+                setTimeout(() => {
+                    document.querySelector('.scene').classList.add('gone');
+                    document.body.classList.add('game');
+                    startGame();                     // from script.js
+                    blackout.classList.remove('on');
+                }, BLACK_FADE_IN + BLACK_HOLD);
+            }
+
+            ['.candle', '.wick', '.flame'].forEach(sel => {
+                document.querySelector(sel).addEventListener('click', onCandleClick);
+            });
+        })();
+    </script>
+
+    <script src="flower.js" defer></script>
+    <script src="script.js" defer></script>
+
+</body>
+
+</html>
